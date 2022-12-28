@@ -1,7 +1,7 @@
 #include<stdio.h>
 
 int subword(unsigned char w){ 
-    unsigned int Sbox[16][16]={  
+    int Sbox[16][16]={  
 {0x63,0x7c,0x77,0x7b,0xf2,0x6b,0x6f,0xc5,0x30,0x01,0x67,0x2b,0xfe,0xd7,0xab,0x76},
 {0xca,0x82,0xc9,0x7d,0xfa,0x59,0x47,0xf0,0xad,0xd4,0xa2,0xaf,0x9c,0xa4,0x72,0xc0},
 {0xb7,0xfd,0x93,0x26,0x36,0x3f,0xf7,0xcc,0x34,0xa5,0xe5,0xf1,0x71,0xd8,0x31,0x15},
@@ -18,6 +18,7 @@ int subword(unsigned char w){
 {0x70,0x3e,0xb5,0x66,0x48,0x03,0xf6,0x0e,0x61,0x35,0x57,0xb9,0x86,0xc1,0x1d,0x9e},
 {0xe1,0xf8,0x98,0x11,0x69,0xd9,0x8e,0x94,0x9b,0x1e,0x87,0xe9,0xce,0x55,0x28,0xdf},
 {0x8c,0xa1,0x89,0x0d,0xbf,0xe6,0x42,0x68,0x41,0x99,0x2d,0x0f,0xb0,0x54,0xbb,0x16}};
+
     unsigned char x,y;
     x = w >> 4;
     y = w & 0xf;
@@ -25,7 +26,7 @@ int subword(unsigned char w){
     return Sbox[x][y];
 }
 int invsubword(unsigned char w){ 
-    unsigned int invSbox[16][16]={
+    int invSbox[16][16]={
 {0x52,0x09,0x6a,0xd5,0x30,0x36,0xa5,0x38,0xbf,0x40,0xa3,0x9e,0x81,0xf3,0xd7,0xfb},
 {0x7c,0xe3,0x39,0x82,0x9b,0x2f,0xff,0x87,0x34,0x8e,0x43,0x44,0xc4,0xde,0xe9,0xcb},
 {0x54,0x7b,0x94,0x32,0xa6,0xc2,0x23,0x3d,0xee,0x4c,0x95,0x0b,0x42,0xfa,0xc3,0x4e},
@@ -42,6 +43,7 @@ int invsubword(unsigned char w){
 {0x60,0x51,0x7f,0xa9,0x19,0xb5,0x4a,0x0d,0x2d,0xe5,0x7a,0x9f,0x93,0xc9,0x9c,0xef},
 {0xa0,0xe0,0x3b,0x4d,0xae,0x2a,0xf5,0xb0,0xc8,0xeb,0xbb,0x3c,0x83,0x53,0x99,0x61},
 {0x17,0x2b,0x04,0x7e,0xba,0x77,0xd6,0x26,0xe1,0x69,0x14,0x63,0x55,0x21,0x0c,0x7d}};
+
     unsigned char x,y;
     x = w >> 4;
     y = w & 0xf;
@@ -84,7 +86,7 @@ unsigned char rot(unsigned char mtmp2, char i){
 
     //x^10のとき
     if(mtmp2 >= 0x4){
-        tmp =tmp  ^ 0x6c;
+        tmp = tmp  ^ 0x6c;
         mtmp2 = mtmp2 ^ 0x4;
     }
 
@@ -95,65 +97,32 @@ unsigned char rot(unsigned char mtmp2, char i){
     }
 
     //x^8のとき
-    if(mtmp2 >= 0x1){
+    if(mtmp2 >= 0x1)
         tmp = tmp ^ 0x1b;
-    }
 
     return tmp;
 }
 
-int Bconversion(unsigned char s){
-    unsigned int B[2], b;
-    int i;
-
-    for(i=0; i<2; i++){
-        if(i == 0)   B[i] = s >> 4;
-        else   B[i] = s % 0x10;        
-    }
-
-    for(i=0; i<2; i++){
-        if(B[i] == 0x1)    B[i] = 1;
-        else if(B[i] == 0x2)    B[i] = 10;
-        else if(B[i] == 0x3)    B[i] = 11;
-        else if(B[i] == 0x4)    B[i] = 100;
-        else if(B[i] == 0x5)    B[i] = 101;
-        else if(B[i] == 0x6)    B[i] = 110;
-        else if(B[i] == 0x7)    B[i] = 111;
-        else if(B[i] == 0x8)    B[i] = 1000;
-        else if(B[i] == 0x9)    B[i] = 1001;
-        else if(B[i] == 0xa)    B[i] = 1010;
-        else if(B[i] == 0xb)    B[i] = 1011;
-        else if(B[i] == 0xc)    B[i] = 1100;
-        else if(B[i] == 0xd)    B[i] = 1101;
-        else if(B[i] == 0xe)    B[i] = 1110;
-        else if(B[i] == 0xf)    B[i] = 1111;
-        else    B[i] = 0;
-    }
-    b = B[0]*10000 + B[1];
-
-    return b;
-}
-
 int main(void){
-    int inM;
     int input[4]={0x00000000,0x00000000,0x00000000,0x00000000};
     int w[44];     //128bit
-    char i,j,ibody,r1,r2,r3;
     unsigned char wn[4];
-    int k[11][4], b[4][4];
+    int k[11][4];
     unsigned char key[11][4][4];
-    unsigned char s[4][4], mtmp[4][4][4];
-    int rcon[10] = {1,2,3,8,16,32,64,128,0x1b,0x36};
+    int rcon[10] = {1,2,4,8,16,32,64,128,0x1b,0x36};
+    char i,j,ibody,r1,r2,r3;
     int tmp, tmp1;
+    unsigned char s[4][4], mtmp[4][4][4];
+
+    int b[4][4];
     FILE *fpe, *fpd;
 
     fpe = fopen("enc.txt","w");
     fpd = fopen("dec.txt","w");
 
     printf("32bit(8桁)ごとに平文を入力\n");
-    for(i=0; i<4; i++){
+    for(i=0; i<4; i++)
         scanf("%x",&input[i]);
-    }
 
     //sboxの準備
     for(i=0; i<4; i++){
@@ -162,7 +131,6 @@ int main(void){
     }
 
     //鍵の生成
-    //
     w[0]=0x00010203;
     w[1]=0x04050607;
     w[2]=0x08090a0b;
@@ -203,7 +171,7 @@ int main(void){
         w[4*i+2] = w[4*i-2] ^ w[4*i+1];
         w[4*i+3] = w[4*i-1] ^ w[4*i+2];
 
-        //4d
+        //4-d
         k[i][0] = w[4*i];
         k[i][1] = w[4*i+1];
         k[i][2] = w[4*i+2];
@@ -213,14 +181,14 @@ int main(void){
     //鍵の代入
     for(r1=1;r1<i;r1++){
         for(r2=0;r2<4;r2++){
-            for(r3=0;r3<4;r3++){
+            for(r3=0;r3<4;r3++)
                 key[r1][r2][3-r3] = k[r1][r2] >> (8*r3);
-            }
         }
     }
 
+
     //平文のテスト表示
-    printf("before enc\n");
+    printf("before encrypt\n");
     for(i=0;i<4;i++){
         for(j=0;j<4;j++)
             printf("%02x\t",s[i][j]);
@@ -236,11 +204,26 @@ int main(void){
 
     //AES本体
     for(ibody=1;ibody<loop+1;ibody++){
+
+        fprintf(fpe, "start[%d]\t",ibody);
+        for(i=0;i<4;i++){
+            for(j=0;j<4;j++)
+                fprintf(fpe, "%02x",s[i][j]);
+        }
+        fprintf(fpe, "\n");
+
         //subbytes
         for(r1=0;r1<4;r1++){
             for(r2=0;r2<4;r2++)
                 s[r1][r2] = subword(s[r1][r2]);
         }
+
+        fprintf(fpe, "s_box[%d]\t",ibody);
+        for(i=0;i<4;i++){
+            for(j=0;j<4;j++)
+                fprintf(fpe, "%02x",s[i][j]);
+        }
+        fprintf(fpe, "\n");
 
         //ShiftRows
         for(i=0;i<4;i++){
@@ -252,6 +235,13 @@ int main(void){
                 s[3][i] = tmp;
             }
         }
+
+        fprintf(fpe, "s_row[%d]\t",ibody);
+        for(i=0;i<4;i++){
+            for(j=0;j<4;j++)
+                fprintf(fpe, "%02x",s[i][j]);
+        }
+        fprintf(fpe, "\n");
 
         //Mixcolumns
         if(ibody!=10){
@@ -278,6 +268,14 @@ int main(void){
                 for(j=0;j<4;j++)
                     s[i][j] = mtmp[0][i][j] ^ mtmp[1][i][j];
             }
+
+        fprintf(fpe, "m_col[%d]\t",ibody);
+        for(i=0;i<4;i++){
+            for(j=0;j<4;j++)
+                fprintf(fpe, "%02x",s[i][j]);
+        }
+        fprintf(fpe, "\n\n");
+
         }
 
         //addroundkey
@@ -288,13 +286,10 @@ int main(void){
     }
     
     //暗号文のテスト表示
-    printf("after enc\n");
+    printf("after encrypt\n");
     for(i=0;i<4;i++){
-        for(j=0;j<4;j++){
+        for(j=0;j<4;j++)
             printf("%02x\t",s[i][j]);
-            b[i][j] = Bconversion(s[i][j]);
-            fprintf(fpe, "%08d",b[i][j]);
-        }
         printf("\n");
     }
 
@@ -306,6 +301,13 @@ int main(void){
                 s[r1][r2] = s[r1][r2] ^ key[10-ibody][r1][r2];
         }
     
+        fprintf(fpd, "start[%d]\t",ibody);
+        for(i=0;i<4;i++){
+            for(j=0;j<4;j++)
+                fprintf(fpd, "%02x",s[i][j]);
+        }
+        fprintf(fpd, "\n");
+
         //inv-Mixcolumns
         if(ibody!=0){
             //1
@@ -362,6 +364,13 @@ int main(void){
             }
         }
 
+        fprintf(fpd, "i_m_c[%d]\t",ibody);
+        for(i=0;i<4;i++){
+            for(j=0;j<4;j++)
+                fprintf(fpd, "%02x",s[i][j]);
+        }
+        fprintf(fpd, "\n");
+
         //inv-ShiftRows
         for(i=0;i<4;i++){
             for(j=0;j<i;j++){
@@ -373,25 +382,38 @@ int main(void){
             }
         }
 
+        fprintf(fpd, "s_irw[%d]\t",ibody);
+        for(i=0;i<4;i++){
+            for(j=0;j<4;j++)
+                fprintf(fpd, "%02x",s[i][j]);
+        }
+        fprintf(fpd, "\n");
+
         //inv-subbytes
         for(r1=0;r1<4;r1++){
             for(r2=0;r2<4;r2++)
                 s[r1][r2] = invsubword(s[r1][r2]);
         }
+
+        fprintf(fpd, "s_ibx[%d]\t",ibody);
+        for(i=0;i<4;i++){
+            for(j=0;j<4;j++)
+                fprintf(fpd, "%02x",s[i][j]);
+        }
+        fprintf(fpd, "\n\n");
     }
 
     //addroundkey
-        for(r1=0;r1<4;r1++){
-            for(r2=0;r2<4;r2++)
-                s[r1][r2] = s[r1][r2] ^ key[0][r1][r2];
+    for(r1=0;r1<4;r1++){
+        for(r2=0;r2<4;r2++)
+            s[r1][r2] = s[r1][r2] ^ key[0][r1][r2];
     }
 
     //復号した平文のテスト表示
-    printf("after dec\n");
+    printf("after decrypt\n");
     for(i=0;i<4;i++){
         for(j=0;j<4;j++){
             printf("%02x\t",s[i][j]);
-            b[i][j] = Bconversion(s[i][j]);
             fprintf(fpd, "%08d",b[i][j]);
         }
         printf("\n");
