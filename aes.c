@@ -104,7 +104,7 @@ unsigned char rot(unsigned char mtmp2, char i){
 }
 
 int main(void){
-    int input[4]={0x00000000,0x00000000,0x00000000,0x00000000};
+    int input[4]={0x0,0x0,0x0,0x0};
     int w[44];     //128bit
     unsigned char wn[4];
     int k[11][4];
