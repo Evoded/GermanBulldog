@@ -414,7 +414,6 @@ int main(void){
     for(i=0;i<4;i++){
         for(j=0;j<4;j++){
             printf("%02x\t",s[i][j]);
-            fprintf(fpd, "%08d",b[i][j]);
         }
         printf("\n");
     }
